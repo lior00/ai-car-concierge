@@ -3,6 +3,7 @@ FastAPI application entrypoint.
 On startup: runs DB migration and RAG ingestion if needed.
 """
 import logging
+import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
@@ -25,14 +26,21 @@ logger = logging.getLogger(__name__)
 _sessions: dict[str, list[dict]] = {}
 
 
+def _ingest_in_background():
+    try:
+        run_ingest()
+        logger.info("RAG ingest complete.")
+    except Exception as e:
+        logger.warning(f"RAG ingest failed — knowledge base unavailable: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting AI Car Concierge...")
     run_migration()
-    try:
-        run_ingest()
-    except Exception as e:
-        logger.warning(f"RAG ingest failed — knowledge base unavailable: {e}")
+    # Run ingest in background so uvicorn binds the port immediately
+    # and Render's health check scanner can reach /health without waiting
+    threading.Thread(target=_ingest_in_background, daemon=True).start()
     logger.info("Ready.")
     yield
 
