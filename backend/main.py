@@ -28,10 +28,10 @@ _sessions: dict[str, list[dict]] = {}
 
 def _ingest_in_background():
     try:
-        run_ingest()
-        logger.info("RAG ingest complete.")
+        count = run_ingest()
+        logger.info(f"RAG ingest complete — {count} chunks embedded.")
     except Exception as e:
-        logger.warning(f"RAG ingest failed — knowledge base unavailable: {e}")
+        logger.exception(f"RAG ingest failed — knowledge base unavailable: {e}")
 
 
 @asynccontextmanager

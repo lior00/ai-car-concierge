@@ -6,13 +6,15 @@ from dataclasses import dataclass
 
 import chromadb
 
-from backend.config import CHROMA_PATH, CHROMA_COLLECTION
+from backend.config import CHROMA_PATH, CHROMA_COLLECTION, EMBEDDING_PROVIDER
 from backend.rag.embeddings import get_embedding_function
 
 logger = logging.getLogger(__name__)
 
 TOP_K = 4
-MIN_RELEVANCE_SCORE = 0.80  # cosine distance threshold — raised for sentence-transformers (distances typically 0.4–0.7 for good matches)
+# Cohere distances for relevant matches are typically 0.3–0.6; sentence-transformers 0.4–0.7
+# Set permissive threshold — too strict = empty results, too loose = noise (LLM handles noise fine)
+MIN_RELEVANCE_SCORE = 0.95
 
 
 @dataclass
