@@ -12,6 +12,7 @@ anthropic==0.40.0
 chromadb==0.5.20
 sentence-transformers==3.3.1    # fallback embeddings (no API key)
 openai==1.58.1                  # for OpenAI embeddings (optional)
+cohere==5.13.12                 # for Cohere embeddings (free tier, no local model)
 
 # Config
 python-dotenv==1.0.1

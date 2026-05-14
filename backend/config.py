@@ -14,6 +14,9 @@ LLM_MODEL: str = os.getenv("LLM_MODEL", "claude-sonnet-4-6")
 EMBEDDING_PROVIDER: str = os.getenv("EMBEDDING_PROVIDER", "sentence-transformers")
 OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
 
+# Cohere (free embeddings API — no local model needed)
+COHERE_API_KEY: str | None = os.getenv("COHERE_API_KEY")
+
 # Email
 EMAIL_FROM: str = os.getenv("EMAIL_FROM", "concierge@premiumdealership.com")
 
