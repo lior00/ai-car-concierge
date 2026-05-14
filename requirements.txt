@@ -1,0 +1,28 @@
+# AI Car Concierge — Python Dependencies
+
+# Core
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.10.3
+
+# LLM
+anthropic==0.40.0
+
+# RAG / Vector DB
+chromadb==0.5.20
+sentence-transformers==3.3.1    # fallback embeddings (no API key)
+openai==1.58.1                  # for OpenAI embeddings (optional)
+
+# Config
+python-dotenv==1.0.1
+
+# Frontend
+streamlit==1.41.1
+requests==2.32.3
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+
+# Optional: structured logging
+# loguru==0.7.3

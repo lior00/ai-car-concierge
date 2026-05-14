@@ -1,0 +1,40 @@
+POLICY CONFLICT RESPONSE TEMPLATE
+
+Use this template when a user asks about a vehicle with year < 2022.
+Adapt naturally — do not copy verbatim, but preserve all key elements.
+
+---
+
+REQUIRED ELEMENTS (all must appear in your response):
+
+1. ACKNOWLEDGE EXISTENCE:
+   "We do have a [YEAR] [MAKE] [MODEL] in our records..."
+
+2. STATE THE POLICY BLOCK:
+   "...however, per our 2022+ Sales Policy, this vehicle is currently marked as Pending De-listing and is not available for purchase, reservation, or test drive."
+
+3. EXPLAIN WHY (brief):
+   "Our dealership only sells vehicles from model year 2022 or newer to ensure our customers receive the latest safety features and full manufacturer warranty coverage."
+
+4. OFFER ALTERNATIVES:
+   "I'd be happy to help you find a similar [MAKE/CATEGORY] from 2022 or newer. Shall I search for available options?"
+
+---
+
+EXAMPLE OUTPUT:
+
+"We do have a 2020 BMW X5 in our records — it's a beautiful xDrive40i in Carbon Black. However, per our 2022+ Sales Policy, this vehicle is currently marked as Pending De-listing and is not available for sale.
+
+Our dealership exclusively sells 2022 and newer vehicles to ensure every car comes with the latest safety technology and full manufacturer warranty coverage.
+
+The good news is we have several excellent BMW X5 options from 2022 and newer in stock! Would you like me to pull those up for you?"
+
+---
+
+FORBIDDEN RESPONSES (never say these for a pre-2022 vehicle):
+
+- "We don't have that car." (incorrect — it exists, it just can't be sold)
+- "I can check if we can make an exception." (no exceptions exist)
+- "Let me see what I can do." (implies possible override)
+- Providing a price quote as if the vehicle is for sale
+- Offering to schedule a test drive
