@@ -25,7 +25,7 @@ A web-based AI chatbot for a premium car dealership. Built in 24 hours for the A
 | **Anthropic API (tool-use)** | Powers the agent orchestrator. Claude decides which tool to call (SQL, RAG, email, reservation) based on user intent. |
 | **Anthropic API (text generation)** | Converts natural language to SQL inside `sql_tool.py`. |
 | **ChromaDB** | In-process vector store for policy/FAQ document retrieval. No external service required. |
-| **sentence-transformers** | Local embedding model — no OpenAI quota needed for RAG ingestion. |
+| **Cohere API** | Free embedding API — generates vector embeddings for RAG without loading a local model, keeping memory usage low. |
 
 **Architectural insight from AI assistance:** The key design decision suggested by Claude was to make `policy_guard.py` a pure Python function at the code layer — not an LLM instruction. This makes the 2022+ rule deterministic and immune to prompt injection, which is the correct production-grade approach.
 
@@ -35,9 +35,10 @@ A web-based AI chatbot for a premium car dealership. Built in 24 hours for the A
 
 ### Prerequisites
 
-- **Python 3.12.10** — tested and confirmed working. Python 3.13+ has dependency conflicts with `sentence-transformers` and `chromadb`; use 3.12.x.
-- A [Mailtrap](https://mailtrap.io) account (free) for email testing.
+- **Python 3.12.10** — tested and confirmed working. Python 3.13+ has dependency conflicts with `chromadb`; use 3.12.x.
 - An [Anthropic](https://console.anthropic.com) API key.
+- A [Cohere](https://cohere.com) API key (free tier, no credit card required) — for RAG embeddings.
+- A [Mailtrap](https://mailtrap.io) account (free) — for email automation.
 
 ### Steps
 
@@ -61,10 +62,9 @@ pip install -r requirements.txt
 # 4. Configure environment variables
 copy .env.example .env    # Windows
 # cp .env.example .env   # macOS / Linux
-# Then edit .env and fill in ANTHROPIC_API_KEY, MAILTRAP_USERNAME, MAILTRAP_PASSWORD
+# Edit .env and fill in your keys (see below)
 
-# 5. Start the backend
-# First run: automatically migrates the SQLite DB and ingests the knowledge base
+# 5. Start the backend (auto-migrates DB and ingests knowledge base on first run)
 uvicorn backend.main:app --reload --port 8000
 
 # 6. Start the frontend (separate terminal, same venv)
@@ -73,20 +73,20 @@ streamlit run frontend/app.py
 
 Open http://localhost:8501 in your browser.
 
-### Getting Mailtrap Credentials
+### Required Environment Variables
 
-1. Sign up at https://mailtrap.io (free).
-2. Go to **Email Testing → Inboxes → your inbox → SMTP Settings**.
-3. Select **Python** from the integrations dropdown.
-4. Copy the `username` and `password` values into `.env`.
+| Variable | Where to get it |
+|---|---|
+| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) |
+| `COHERE_API_KEY` | [cohere.com](https://dashboard.cohere.com/api-keys) — free tier, no card needed |
+| `MAILTRAP_USERNAME` | Mailtrap → Email Testing → Inboxes → SMTP Settings → Python |
+| `MAILTRAP_PASSWORD` | Same as above |
 
-Sent emails appear in your Mailtrap inbox — no real delivery, no domain verification needed.
+Set `EMBEDDING_PROVIDER=cohere` in your `.env` to use Cohere embeddings (recommended — no local model download).
 
-### Embedding Provider
+Alternatively, set `EMBEDDING_PROVIDER=sentence-transformers` to run fully offline with no Cohere key (~90MB model downloaded on first run).
 
-By default `.env.example` uses `EMBEDDING_PROVIDER=sentence-transformers` which downloads a small model locally on first run (~90MB, one-time). No OpenAI key required. If you prefer OpenAI embeddings, set `EMBEDDING_PROVIDER=openai` and add your `OPENAI_API_KEY`.
-
-> **Note:** If you switch embedding providers after the knowledge base has already been ingested, delete `data/chroma_db/` to force re-ingestion with the new model.
+> **Note:** If you switch embedding providers after the first run, delete `data/chroma_db/` to force re-ingestion.
 
 ### Run Tests
 
@@ -134,22 +134,25 @@ See [.env.example](.env.example) for all variables with descriptions.
 
 **Required:**
 - `ANTHROPIC_API_KEY`
+- `COHERE_API_KEY` — for embeddings (free tier)
 - `MAILTRAP_USERNAME` + `MAILTRAP_PASSWORD` — for email automation
 
 **Optional:**
+- `EMBEDDING_PROVIDER` — defaults to `sentence-transformers` if no Cohere key; set to `cohere` to use the API
 - `OPENAI_API_KEY` — only if `EMBEDDING_PROVIDER=openai`
-- `EMBEDDING_PROVIDER` — defaults to `sentence-transformers`
 
 ---
 
-## Deployment (Railway)
+## Deployment (Render)
 
-1. Push to GitHub.
-2. Connect repo to Railway.
-3. Set environment variables in Railway dashboard (same keys as `.env`).
-4. Railway auto-deploys using `railway.toml` and `Dockerfile`.
-5. For Streamlit frontend: deploy as a second Railway service with start command:
-   ```
-   streamlit run frontend/app.py --server.port $PORT --server.address 0.0.0.0
-   ```
-   Set `BACKEND_URL` env var to the FastAPI service URL.
+The app is deployed as two separate Render web services from the same GitHub repo.
+
+**Backend (Docker):**
+1. New Web Service → select repo → Runtime: Docker
+2. Add environment variables: `ANTHROPIC_API_KEY`, `COHERE_API_KEY`, `MAILTRAP_USERNAME`, `MAILTRAP_PASSWORD`, `EMBEDDING_PROVIDER=cohere`, `ENVIRONMENT=production`, `PORT=10000`
+
+**Frontend (Python):**
+1. New Web Service → select repo → Runtime: Python 3.12
+2. Build command: `pip install -r requirements.txt`
+3. Start command: `streamlit run frontend/app.py --server.port $PORT --server.address 0.0.0.0`
+4. Add environment variable: `BACKEND_URL=https://your-backend.onrender.com`
