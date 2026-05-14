@@ -21,7 +21,13 @@ class _CohereEmbeddingFunction(EmbeddingFunction[Documents]):
             input_type="search_document",
             embedding_types=["float"],
         )
-        return resp.embeddings.float_
+        # cohere v5 returns embeddings in resp.embeddings.float_
+        # fall back to iterating the response object if needed
+        raw = resp.embeddings
+        if hasattr(raw, "float_") and raw.float_:
+            return [list(e) for e in raw.float_]
+        # older response shape: resp.embeddings is directly iterable
+        return [list(e) for e in raw]
 
 
 def get_embedding_function():
