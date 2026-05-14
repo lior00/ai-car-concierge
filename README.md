@@ -2,7 +2,9 @@
 
 A web-based AI chatbot for a premium car dealership. Built in 24 hours for the AI Engineering Home Task assessment.
 
-**Live URL:** https://ai-car-concierge.onrender.com
+**Live URL (Frontend):** https://ai-car-concierge-frontend.onrender.com
+
+**Live URL (Backend API):** https://ai-car-concierge.onrender.com
 
 ---
 

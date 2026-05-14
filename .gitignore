@@ -1,5 +1,8 @@
 # Environment & secrets
 .env
+
+# Local guides (not part of submission)
+AI_CAR_CONCIERGE_LEARNING_GUIDE.md
 *.env.local
 
 # Python
