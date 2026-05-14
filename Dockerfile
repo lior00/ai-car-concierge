@@ -21,4 +21,4 @@ RUN mkdir -p data/chroma_db
 EXPOSE 8000
 
 # Start FastAPI backend (Streamlit is served separately or via Railway multi-service)
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
