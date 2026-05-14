@@ -69,7 +69,7 @@ if prompt := st.chat_input("Ask about our vehicles, policies, or anything else..
                 resp = requests.post(
                     f"{BACKEND_URL}/chat",
                     json={"message": prompt, "session_id": st.session_state.session_id},
-                    timeout=60,
+                    timeout=120,
                 )
                 resp.raise_for_status()
                 assistant_reply = resp.json()["response"]
@@ -110,7 +110,7 @@ with st.sidebar:
                     resp = requests.post(
                         f"{BACKEND_URL}/chat",
                         json={"message": s, "session_id": st.session_state.session_id},
-                        timeout=60,
+                        timeout=120,
                     )
                     resp.raise_for_status()
                     reply = resp.json()["response"]
